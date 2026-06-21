@@ -78,6 +78,18 @@ These prevent the most common runtime errors. Do not skip them.
 6. **End mutations with `SpreadsheetApp.flush();`**
 7. **Reference sheets by exact name** in cross-sheet formulas; the tab must exist
    in the same spreadsheet.
+8. **Prefer injected formulas over `onEdit` triggers** for any derived, sequential,
+   or auto-generated value (auto-IDs, totals, labels, statuses). A formula
+   self-updates, needs no trigger setup or permissions, and is blank-safe. Reach
+   for `onEdit` only when a formula genuinely cannot express the behavior (e.g.
+   writing to an *unrelated* cell, calling an external service, or timestamping an
+   immutable value). Example auto-ID (no trigger):
+   `=IF(B2="","","C"&TEXT(COUNTA($B$2:B2),"000"))`
+9. **Use only real `DataValidationBuilder` methods.** There is **no**
+   `requireTextLengthLessThanOrEqualTo`, `requireTextStartsWith`,
+   `requireTextMatches`, etc. — inventing them throws *"... is not a function"*.
+   For length, prefix, or pattern checks use `requireFormulaSatisfied`. The full
+   valid method list is in `references/sheet-formatting.md`.
 
 ## Assets — start from working templates
 

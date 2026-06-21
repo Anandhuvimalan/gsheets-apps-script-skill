@@ -78,9 +78,52 @@ const positive = SpreadsheetApp.newDataValidation()
 sheet.getRange(2, 11, numRows, 1).setDataValidation(positive);
 ```
 
-Common builders: `requireNumberBetween(a,b)`, `requireNumberGreaterThanOrEqualTo(n)`,
-`requireTextIsEmail()`, `requireValueInRange(range)` (dropdown sourced from cells),
-`requireCheckbox()`.
+### Valid `DataValidationBuilder` methods (use ONLY these)
+
+Inventing a method name throws *"... is not a function"*. The complete set:
+
+- **Lists / dropdowns:** `requireValueInList(values, showDropdown)`,
+  `requireValueInRange(range, showDropdown)`
+- **Numbers:** `requireNumberBetween`, `requireNumberNotBetween`,
+  `requireNumberEqualTo`, `requireNumberNotEqualTo`, `requireNumberGreaterThan`,
+  `requireNumberGreaterThanOrEqualTo`, `requireNumberLessThan`,
+  `requireNumberLessThanOrEqualTo`
+- **Dates:** `requireDate`, `requireDateAfter`, `requireDateBefore`,
+  `requireDateBetween`, `requireDateNotBetween`, `requireDateEqualTo`,
+  `requireDateOnOrAfter`, `requireDateOnOrBefore`
+- **Text (limited):** `requireTextContains`, `requireTextDoesNotContain`,
+  `requireTextEqualTo`, `requireTextIsEmail`, `requireTextIsUrl`
+- **Other:** `requireCheckbox`, `requireFormulaSatisfied(formula)`
+
+There is **no** method for text length, "starts with", or regex. Express those
+with `requireFormulaSatisfied` (the formula is relative to the range's top-left
+cell, like a conditional-format formula):
+
+```js
+// Max 25 characters
+.requireFormulaSatisfied('=LEN(B2)<=25')
+// Must start with "C"
+.requireFormulaSatisfied('=LEFT(A2,1)="C"')
+// Pattern (regex)
+.requireFormulaSatisfied('=REGEXMATCH(A2,"^C\\d{3}$")')
+```
+
+### Auto-ID / sequential values — inject a formula, don't trigger
+
+Per universal rule 8, generate IDs with a formula in the ID column rather than an
+`onEdit` script. Blank-safe and gap-safe (numbers by running count of names):
+
+```js
+const idFormulas = [];
+for (let r = 2; r <= bufferLastRow; r++) {   // e.g. row 1000 so new rows auto-fill
+  idFormulas.push(['=IF(B' + r + '="","","C"&TEXT(COUNTA($B$2:B' + r + '),"000"))']);
+}
+sheet.getRange(2, 1, idFormulas.length, 1).setFormulas(idFormulas);
+```
+
+`C001, C002, …`; a new name in the next empty row auto-gets the next ID, and empty
+rows stay blank. Use `ROW()-1` instead of `COUNTA(...)` only when IDs must track
+the physical row number rather than the count of entries.
 
 ## Derived label column
 

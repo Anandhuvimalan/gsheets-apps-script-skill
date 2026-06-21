@@ -21,6 +21,7 @@ adjacent cell. Template: `assets/inject-answers-template.gs`.
 | Look up a value by key | `=VLOOKUP("C003",A:C,3,FALSE)` |
 | Robust lookup (key not leftmost / left of result) | `=INDEX(C:C,MATCH("C003",A:A,0))` |
 | Conditional value | `=IF(M2>=50000,"High","Low")` |
+| Auto sequential ID (blank-safe) | `=IF(B2="","","C"&TEXT(COUNTA($B$2:B2),"000"))` |
 | Unique list | `=UNIQUE(D2:D)` |
 | Running/grouped totals | `=QUERY(A:H,"select D, sum(H) group by D",1)` |
 
