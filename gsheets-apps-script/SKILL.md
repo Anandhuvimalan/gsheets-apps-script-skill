@@ -43,7 +43,9 @@ the rules below exist to avoid them — follow them on every task.
 | Answers to questions in the sheet, or computed values via formulas (lookup/aggregate) | `references/formulas.md` |
 
 When anything breaks, consult `references/troubleshooting.md` — it catalogs the
-exact Apps Script errors seen in practice and their fixes.
+exact Apps Script errors seen in practice and their fixes. For request→output
+worked examples (including the auto-ID + validation case), see
+`references/examples.md`.
 
 ## Universal rules (apply to every workflow)
 
